@@ -2,7 +2,7 @@
 {
 	public struct AutomAnnotationInner
 	{
-		public AutomAnnotationInner(ushort modelNo, ushort itemNo, ushort prefixNo)
+		public AutomAnnotationInner(int modelNo, ushort itemNo, ushort prefixNo)
 		{
 			ModelNo = modelNo;
 			ItemNo = itemNo;
@@ -12,7 +12,7 @@
 		}
 
 		// these members are read from the automat
-		public ushort ModelNo { get; }
+		public int ModelNo { get; }
 		public ushort ItemNo { get; }
 		public ushort PrefixNo { get; }
 

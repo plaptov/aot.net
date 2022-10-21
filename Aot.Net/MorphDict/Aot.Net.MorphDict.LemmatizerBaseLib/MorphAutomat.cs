@@ -117,9 +117,9 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return NextNode(r, AnnotChar);
 		}
 
-		public static void DecodeMorphAutomatInfo(int Info, out ushort ModelNo, out ushort ItemNo, out ushort PrefixNo)
+		public static void DecodeMorphAutomatInfo(int Info, out int ModelNo, out ushort ItemNo, out ushort PrefixNo)
 		{
-			ModelNo = (ushort)(Info >> 18);
+			ModelNo = Info >> 18;
 			ItemNo = (ushort)((0x3FFFF & Info) >> 9);
 			PrefixNo = (ushort)(0x1FF & Info);
 		}

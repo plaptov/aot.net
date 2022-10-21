@@ -65,6 +65,78 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				}
 		}
 
-		public bool IsPrefix(string prefix) => _prefixesSet.Contains(prefix);
+		protected bool IsPrefix(string prefix) => _prefixesSet.Contains(prefix);
+
+		protected virtual string FilterSrc(string src) => src;
+
+		protected bool LemmatizeWord(string InputWordStr, bool cap, bool predict, bool getLemmaInfos, List<AutomAnnotationInner> results)
+		{
+			InputWordStr = InputWordStr.Trim().ToUpper();
+			int WordOffset = 0;
+
+			results = _formAutomat.GetInnerMorphInfos(InputWordStr, 0);
+			var bResult = results.Count > 0;
+
+			if (results.Count == 0 && predict)
+			{
+				results = PredictBySuffix(InputWordStr, out WordOffset, 4); // the length of the minal suffix is 4 
+
+				if (InputWordStr[WordOffset - 1] != '-') // and there is no hyphen
+				{
+					var KnownPostfixLen = InputWordStr.Length - WordOffset;
+					var UnknownPrefixLen = WordOffset;
+					if (KnownPostfixLen < 6)// if  the known part is too short
+						//if	(UnknownPrefixLen > 5)// no prediction if unknown prefix is more than 5
+					{
+						if (!IsPrefix(InputWordStr[..UnknownPrefixLen]))
+							results.Clear();
+					};
+				}
+
+				// отменяем предсказание по местоимениям, например _R("Семыкиным")
+				foreach (var item in results)
+					if (ProductiveModels[item.ModelNo] == 0)
+					{
+						results.Clear();
+						break;
+					};
+			}
+
+			if (results.Count > 0)
+			{
+				if (getLemmaInfos)
+					results = GetLemmaInfos(InputWordStr, WordOffset, results.ToArray());
+			}
+			else if (predict)
+			{
+				PredictByDataBase
+			}
+		}
+
+		protected AutomAnnotationInner ConvertPredictTupleToAnnot(PredictTuple input)
+		{
+			return new AutomAnnotationInner(
+				modelNo: LemmaInfos[input.LemmaInfoNo].LemmaInfo.FlexiaModelNo,
+				itemNo: input.ItemNo,
+				prefixNo: 0)
+			{
+				LemmaInfoNo = input.LemmaInfoNo,
+				Weight = 0,
+			};
+		}
+
+		protected bool CheckAbbreviation(string InputWordStr, out List<AutomAnnotationInner>? FindResults, bool is_cap)
+		{
+			FindResults = null;
+			if (InputWordStr.Any(c => Utils.IsUpperConsonant(c, Language)))
+				return false;
+
+			_predict.Find(_formAutomat.GetCriticalNounLetterPack(), out var res);
+			FindResults = new(1)
+			{
+				ConvertPredictTupleToAnnot(res[0]),
+			};
+			return true;
+		}
 	}
 }

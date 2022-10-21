@@ -297,17 +297,23 @@ namespace Aot.Net.MorphDict.Common
 
 		public static bool IsRussianAlpha(char x) => IsRussianLower(x) || IsRussianUpper(x);
 
+		public static bool IsRussianUpperVowel(char c) => IsRussianUpper(c) && ASCII[c].HasFlag(Letter.RussianVowel);
+
 		public static bool IsEnglishLower(char x) => ASCII[x].HasFlag(Letter.EngLower);
 
 		public static bool IsEnglishUpper(char x) => ASCII[x].HasFlag(Letter.EngUpper);
 
 		public static bool IsEnglishAlpha(char x) => IsEnglishLower(x) || IsEnglishUpper(x);
 
+		public static bool IsEnglishUpperVowel(char c) => IsEnglishUpper(c) && ASCII[c].HasFlag(Letter.LatinVowel);
+
 		public static bool IsGermanLower(char x) => ASCII[x].HasFlag(Letter.GerLower);
 
 		public static bool IsGermanUpper(char x) => ASCII[x].HasFlag(Letter.GerUpper);
 
 		public static bool IsGermanAlpha(char x) => IsGermanLower(x) || IsGermanUpper(x);
+
+		public static bool IsGermanUpperVowel(char c) => IsGermanUpper(c) && ASCII[c].HasFlag(Letter.LatinVowel);
 
 		public static bool IsGenericUpper(char x) => ASCII[x].HasFlag(Letter.EngUpper);
 
@@ -325,5 +331,18 @@ namespace Aot.Net.MorphDict.Common
 			_ => throw new ArgumentOutOfRangeException(nameof(language), language, "Unexpected language"),
 		};
 
+		public static bool IsUpperVowel(char c, MorphLanguage language) => language switch
+		{
+			MorphLanguage.Russian => IsRussianUpperVowel(c),
+			MorphLanguage.English => IsEnglishUpperVowel(c),
+			MorphLanguage.German => IsGermanUpperVowel(c),
+			_ => throw new ArgumentOutOfRangeException(nameof(language), language, "Unexpected language"),
+		}
+
+
+		public static bool IsUpperConsonant(char c, MorphLanguage language)
+		{
+			return IsUpperAlpha(c, language) && !IsUpperVowel(c, language);
+		}
 	}
 }

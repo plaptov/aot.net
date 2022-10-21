@@ -2,7 +2,7 @@
 
 namespace Aot.Net.MorphDict.LemmatizerBaseLib
 {
-	public record struct PredictTuple(ushort ItemNo, uint LemmaInfoNo, byte PartOfSpeechNo);
+	public record struct PredictTuple(ushort ItemNo, int LemmaInfoNo, byte PartOfSpeechNo);
 
 	public class PredictBase
 	{
@@ -76,7 +76,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				var partOfSpeechNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(i).Take(j - i - 1));
 				var lemmaInfoNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(j).Take(k - j - 1));
 				var itemNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(k));
-				infos.Add(new((ushort)itemNo, (uint)lemmaInfoNo, (byte)partOfSpeechNo));
+				infos.Add(new((ushort)itemNo, lemmaInfoNo, (byte)partOfSpeechNo));
 			}
 
 			var count = _suffixAutomat.GetChildrenCount(nodeNo);
