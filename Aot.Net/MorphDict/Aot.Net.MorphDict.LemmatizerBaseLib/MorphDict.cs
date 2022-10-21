@@ -38,20 +38,22 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
             Stream basesFile)
         {
             _formAutomat.Load(formsAutomFile);
-
+            using var reader = new StreamReader(annotFile, Encoding.UTF8, leaveOpen: true);
+            var flexias = ReadFlexiaModels(reader);
+            var accents = ReadAccentModels(reader);
+            var prefixes = ReadPrefixes(reader);
         }
 
-        public static List<FlexiaModel> ReadFlexiaModels(Stream annotFile)
+        private static IReadOnlyList<string> ReadPrefixes(TextReader reader)
         {
-            using var reader = new StreamReader(annotFile, Encoding.UTF8, leaveOpen: true);
             var count = GetCount(reader);
-            var models = new List<FlexiaModel>(count);
+            var list = new List<string>(count + 1);
+            list.Add("");
             for (int i = 0; i < count; i++)
             {
-                string s = reader.ReadLine()?.Trim() ?? throw new Exception("Cannot read flexia models");
-                models.Add(FlexiaModel.ReadFromString(s));
+                list.Add(reader.ReadLine()!);
             }
-            return models;
+            return list;
         }
-	}
+    }
 }
