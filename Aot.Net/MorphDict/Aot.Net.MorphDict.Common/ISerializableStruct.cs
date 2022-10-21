@@ -1,10 +1,7 @@
-﻿using System.Runtime.InteropServices;
-
-namespace Aot.Net.MorphDict.Common
+﻿namespace Aot.Net.MorphDict.Common
 {
-	internal interface ISerializableStruct<T> where T : struct
+	public interface ISerializableStruct<T> where T : unmanaged
 	{
-		static int Size() => Marshal.SizeOf(typeof(T));
-		void RestoreFromBytes(ReadOnlySpan<byte> bytes);
+		ReadOnlySpan<byte> RestoreFromBytes(ReadOnlySpan<byte> bytes);
 	}
 }

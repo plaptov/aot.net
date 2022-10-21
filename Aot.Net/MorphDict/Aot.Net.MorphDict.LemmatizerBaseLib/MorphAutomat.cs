@@ -1,8 +1,4 @@
-﻿using System;
-
-using Aot.Net.MorphDict.Common;
-
-using static System.Net.Mime.MediaTypeNames;
+﻿using Aot.Net.MorphDict.Common;
 
 namespace Aot.Net.MorphDict.LemmatizerBaseLib
 {
@@ -71,7 +67,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			};
 		}
 
-		private int NextNode(int NodeNo, char RelationChar)
+		internal int NextNode(int NodeNo, char RelationChar)
 		{
 			if (NodeNo < ChildrenCacheSize)
 			{
@@ -141,10 +137,11 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 			int Count = GetChildrenCount(NodeNo);
 			int CurrPathSize = curr_path.Count;
+			curr_path.Add(default);
 			for (int i = 0; i < Count; i++)
 			{
 				MorphAutomRelation p = GetChildren(NodeNo, i);
-				curr_path.Add(p.GetRelationalChar());
+				curr_path[CurrPathSize] = p.GetRelationalChar();
 				GetAllMorphInterpsRecursive(p.GetChildNo(), curr_path, Infos);
 			};
 			curr_path.RemoveRange(CurrPathSize - 1, curr_path.Count - CurrPathSize);

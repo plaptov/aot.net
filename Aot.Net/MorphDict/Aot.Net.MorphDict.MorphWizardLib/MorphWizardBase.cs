@@ -4,18 +4,16 @@ namespace Aot.Net.MorphDict.MorphWizardLib
 {
     public class MorphWizardBase
     {
-        public MorphWizardBase(MorphLanguage language, IReadOnlyList<FlexiaModel> flexiaModels, IReadOnlyList<AccentModel> accentModels)
+        public MorphWizardBase(MorphLanguage language)
         {
             Language = language;
-            FlexiaModels = flexiaModels;
-            AccentModels = accentModels;
         }
 
         public MorphLanguage Language { get; }
 
-        public IReadOnlyList<FlexiaModel> FlexiaModels { get; }
+        public IReadOnlyList<FlexiaModel> FlexiaModels { get; protected set; }
 
-        public IReadOnlyList<AccentModel> AccentModels { get; }
+        public IReadOnlyList<AccentModel> AccentModels { get; protected set; }
 
         protected static int GetCount(TextReader reader) => int.Parse(reader.ReadLine()!);
 
