@@ -69,7 +69,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 		protected virtual string FilterSrc(string src) => src;
 
-		protected bool LemmatizeWord(string InputWordStr, bool cap, bool predict, bool getLemmaInfos, List<AutomAnnotationInner> results)
+		protected bool LemmatizeWord(string InputWordStr, bool cap, bool predict, bool getLemmaInfos, out List<AutomAnnotationInner> results)
 		{
 			InputWordStr = InputWordStr.Trim().ToUpper();
 			int WordOffset = 0;
@@ -109,8 +109,20 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			}
 			else if (predict)
 			{
-				PredictByDataBase
+				results = PredictByDataBase(InputWordStr, cap);
+				for (int i = results.Count - 1; i >= 0; i--)
+				{
+					var A = results[i];
+					var M = FlexiaModels[A.ModelNo];
+					var F = M.Flexia[A.ItemNo];
+					if (F.FlexiaStr.Length >= InputWordStr.Length)
+					{
+						results.RemoveAt(i);
+					}
+				}
 			}
+
+			return bResult;
 		}
 
 		protected AutomAnnotationInner ConvertPredictTupleToAnnot(PredictTuple input)
@@ -138,5 +150,49 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			};
 			return true;
 		}
+
+		public List<AutomAnnotationInner> PredictByDataBase(string InputWordString, bool is_cap)
+		{
+			if (CheckAbbreviation(InputWordString, out var FindResults, is_cap))
+				return FindResults!;
+
+			List<PredictTuple> res = new(0);
+			if (CheckABC(InputWordString)) // if the ABC is wrong this prediction yuilds to many variants
+			{
+				InputWordString = new string(InputWordString.Reverse().ToArray());
+				_predict.Find(_formAutomat.GetCriticalNounLetterPack(), out res);
+			}
+
+			List<int> has_nps = new(32); // assume not more than 32 different pos
+			FindResults = new();
+			foreach (var item in res)
+			{
+				var PartOfSpeechNo = item.PartOfSpeechNo;
+				if (!MaximalPrediction && has_nps[PartOfSpeechNo] != -1)
+				{
+					var old_freq = _predict.ModelFreq[FindResults[has_nps[PartOfSpeechNo]].ModelNo];
+					var new_freq = _predict.ModelFreq[LemmaInfos[item.LemmaInfoNo].LemmaInfo.FlexiaModelNo];
+					if (old_freq < new_freq)
+						FindResults[has_nps[PartOfSpeechNo]] = ConvertPredictTupleToAnnot(item);
+
+					continue;
+				}
+
+				has_nps[PartOfSpeechNo] = FindResults.Count;
+
+				FindResults.Add(ConvertPredictTupleToAnnot(item));
+			}
+
+			if ((has_nps[0] == -1) // no noun
+				|| (is_cap && (Language != MorphLanguage.German)) // or can be a proper noun (except German, where all nouns are written uppercase)
+				)
+			{
+				_predict.Find(_formAutomat.GetCriticalNounLetterPack(), out res);
+				FindResults.Add(ConvertPredictTupleToAnnot(res.Last()));
+			};
+			return FindResults;
+		}
+
+		public bool CheckABC(string wordForm) => _formAutomat.CheckABCWithoutAnnotator(wordForm);
 	}
 }
