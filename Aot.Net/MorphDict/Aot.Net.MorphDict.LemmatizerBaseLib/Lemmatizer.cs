@@ -194,5 +194,37 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 		}
 
 		public bool CheckABC(string wordForm) => _formAutomat.CheckABCWithoutAnnotator(wordForm);
+
+		public (bool, string) GetAllAncodesAndLemmasQuick(string InputWordString, bool capital, int MaxBufferSize, bool usePrediction)
+		{
+			InputWordString = FilterSrc(InputWordString);
+
+			bool found = LemmatizeWord(InputWordString, capital, usePrediction, false, out var FindResults);
+
+			var sb = new StringBuilder();
+			foreach (var A in FindResults)
+			{
+				var M = FlexiaModels[A.ModelNo];
+				var F = M.Flexia[A.ItemNo];
+				var PrefixLen = F.PrefixStr.Length;
+				var BaseStart = 0;
+				if (found || InputWordString[..PrefixLen] != F.PrefixStr)
+					BaseStart = PrefixLen;
+				var BaseLen = InputWordString.Length - F.FlexiaStr.Length - BaseStart;
+				if (BaseLen < 0)
+					BaseLen = InputWordString.Length;
+				var GramCodeLen = M.Flexia[A.ItemNo].Gramcode.Length;
+				var FlexiaLength = M.Flexia[0].FlexiaStr.Length;
+				if (BaseLen + FlexiaLength + 3 + GramCodeLen > MaxBufferSize - sb.Length)
+					return (false, sb.ToString());
+
+				sb.Append(InputWordString.AsSpan(BaseStart, BaseLen));
+				sb.Append(M.Flexia[0].FlexiaStr);
+				sb.Append(' ');
+				sb.Append(M.Flexia[A.ItemNo].Gramcode);
+				sb.Append('#');
+			}
+			return (true, sb.ToString());
+		}
 	}
 }
