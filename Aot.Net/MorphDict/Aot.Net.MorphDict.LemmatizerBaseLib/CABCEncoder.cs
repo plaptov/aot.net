@@ -43,7 +43,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			Code2AlphabetWithoutAnnotator = code2AlphabetWithoutAnnotator;
 			Alphabet2CodeWithoutAnnotator = alphabet2CodeWithoutAnnotator;
 
-			if (AlphabetSizeWithoutAnnotator != AlphabetSize + 1)
+			if (AlphabetSizeWithoutAnnotator + 1 != AlphabetSize)
 				throw new Exception("Invalid alphabets sizes");
 		}
 
@@ -92,8 +92,8 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 		private static int InitAlphabet(MorphLanguage Language, char[] pCode2Alphabet, int[] pAlphabet2Code, char AnnotChar)
 		{
-			if (!IsUpperAlpha(AnnotChar, Language))
-				throw new ArgumentException($"AnnotChar must be uppercased. Value: {AnnotChar}");
+			if (IsUpperAlpha(AnnotChar, Language))
+				throw new ArgumentException($"AnnotChar must not be uppercase. Value: {AnnotChar}");
 			const string additionalEnglishChars = "'1234567890";
 			const string additionalGermanChars = "";
 			const string additionalRussianChars = "&_";

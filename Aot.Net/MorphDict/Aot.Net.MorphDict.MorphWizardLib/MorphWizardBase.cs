@@ -17,13 +17,15 @@ namespace Aot.Net.MorphDict.MorphWizardLib
 
         protected static int GetCount(TextReader reader) => int.Parse(reader.ReadLine()!);
 
-        protected static IReadOnlyList<FlexiaModel> ReadFlexiaModels(TextReader reader)
+        protected static int GetCount(BinaryReader reader) => int.Parse(reader.ReadTerminatedShortString());
+
+        protected static IReadOnlyList<FlexiaModel> ReadFlexiaModels(BinaryReader reader)
         {
             var count = GetCount(reader);
             var result = new List<FlexiaModel>(count);
             for (int i = 0; i < count; i++)
             {
-                var line = reader.ReadLine()?.Trim();
+                var line = reader.ReadTerminatedLongString()?.Trim();
                 if (line is null)
                     throw new InvalidDataException("Cannot read enough flexia models");
                 result.Add(FlexiaModel.ReadFromString(line));
@@ -31,13 +33,13 @@ namespace Aot.Net.MorphDict.MorphWizardLib
             return result;
         }
 
-        protected static IReadOnlyList<AccentModel> ReadAccentModels(TextReader reader)
+        protected static IReadOnlyList<AccentModel> ReadAccentModels(BinaryReader reader)
         {
             var count = GetCount(reader);
             var result = new List<AccentModel>(count);
             for (int i = 0; i < count; i++)
             {
-                var line = reader.ReadLine()?.Trim();
+                var line = reader.ReadTerminatedLongString()?.Trim();
                 if (line is null)
                     throw new InvalidDataException("Cannot read enough accent models");
                 result.Add(AccentModel.ReadFromString(line));

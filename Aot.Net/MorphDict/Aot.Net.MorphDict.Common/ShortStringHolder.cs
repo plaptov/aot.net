@@ -2,7 +2,6 @@ namespace Aot.Net.MorphDict.Common
 {
 	public class ShortStringHolder
 	{
-		private static readonly Encoding _encoding = Encoding.GetEncoding(1251);
 		private readonly IReadOnlyList<string> _strings;
 
 		private ShortStringHolder(IReadOnlyList<string> strings)
@@ -27,7 +26,8 @@ namespace Aot.Net.MorphDict.Common
 				var len = (byte)stream.ReadByte();
 				var slice = buf[..len];
 				stream.Read(slice);
-				var s = _encoding.GetString(slice);
+				stream.ReadByte(); // \0 in the end
+				var s = Encodings.Win1251.GetString(slice);
 				list.Add(s);
 			}
 			return new ShortStringHolder(list);

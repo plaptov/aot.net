@@ -6,7 +6,9 @@ using static Aot.Net.MorphDict.Common.StructSerializer;
 
 namespace Aot.Net.MorphDict.MorphWizardLib
 {
-	[StructLayout(LayoutKind.Sequential, Size = 8)]
+	[StructLayout(LayoutKind.Sequential,
+		// CommonAncodeSize is 2 but we need to pad to 4 bytes
+		Size = 8)]
 	public struct LemmaInfo : ISerializableStruct<LemmaInfo>
 	{
 		public ushort FlexiaModelNo;
@@ -19,7 +21,7 @@ namespace Aot.Net.MorphDict.MorphWizardLib
 			if (CommonAncode1 == 0)
 				return "";
 			Span<byte> buf = stackalloc byte[] { CommonAncode1, CommonAncode2 };
-			return Encoding.GetEncoding(1251).GetString(buf);
+			return Encodings.Win1251.GetString(buf);
 		}
 
 		public ReadOnlySpan<byte> RestoreFromBytes(ReadOnlySpan<byte> bytes)

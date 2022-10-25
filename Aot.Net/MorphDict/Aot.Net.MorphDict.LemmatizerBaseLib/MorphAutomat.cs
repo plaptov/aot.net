@@ -18,17 +18,19 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 		{
 			using (var reader = new BinaryReader(stream))
 			{
-				var s = reader.ReadString();
+				var s = reader.ReadTerminatedShortString();
 				var nodesCount = int.Parse(s);
 				var nodes = new MorphAutomNode[nodesCount];
 				for (int i = 0; i < nodesCount; i++)
 					nodes[i] = new MorphAutomNode(reader.ReadUInt32());
+				Nodes = nodes;
 
-				s = reader.ReadString();
+				s = reader.ReadTerminatedShortString();
 				var relationsCount = int.Parse(s);
 				var relations = new MorphAutomRelation[relationsCount];
 				for (int i = 0; i < relationsCount; i++)
 					relations[i] = new MorphAutomRelation(reader.ReadUInt32());
+				Relations = relations;
 
 				foreach (var item in Alphabet2Code)
 				{

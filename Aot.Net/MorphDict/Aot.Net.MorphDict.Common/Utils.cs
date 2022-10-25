@@ -282,6 +282,9 @@ namespace Aot.Net.MorphDict.Common
 /*latin small letter y with diaeresis  'ÿ'*/          Letter.RusLower|Letter.RussianVowel
 		};
 
+		private static Letter GetLetter(char x) =>
+			0 <= x && x < 256 ? ASCII[x] : Letter.None;
+
 		public static bool IsUpperAlpha(char x, MorphLanguage language) => language switch
 		{
 			MorphLanguage.Russian => IsRussianUpper(x),
@@ -291,35 +294,35 @@ namespace Aot.Net.MorphDict.Common
 			_ => throw new ArgumentOutOfRangeException(nameof(language), language, "Unexpected language"),
 		};
 
-		public static bool IsRussianLower(char x) => ASCII[x].HasFlag(Letter.RusLower);
+		public static bool IsRussianLower(char x) => GetLetter(x).HasFlag(Letter.RusLower);
 
-		public static bool IsRussianUpper(char x) => ASCII[x].HasFlag(Letter.RusUpper);
+		public static bool IsRussianUpper(char x) => GetLetter(x).HasFlag(Letter.RusUpper);
 
 		public static bool IsRussianAlpha(char x) => IsRussianLower(x) || IsRussianUpper(x);
 
-		public static bool IsRussianUpperVowel(char c) => IsRussianUpper(c) && ASCII[c].HasFlag(Letter.RussianVowel);
+		public static bool IsRussianUpperVowel(char c) => IsRussianUpper(c) && GetLetter(c).HasFlag(Letter.RussianVowel);
 
-		public static bool IsEnglishLower(char x) => ASCII[x].HasFlag(Letter.EngLower);
+		public static bool IsEnglishLower(char x) => GetLetter(x).HasFlag(Letter.EngLower);
 
-		public static bool IsEnglishUpper(char x) => ASCII[x].HasFlag(Letter.EngUpper);
+		public static bool IsEnglishUpper(char x) => GetLetter(x).HasFlag(Letter.EngUpper);
 
 		public static bool IsEnglishAlpha(char x) => IsEnglishLower(x) || IsEnglishUpper(x);
 
-		public static bool IsEnglishUpperVowel(char c) => IsEnglishUpper(c) && ASCII[c].HasFlag(Letter.LatinVowel);
+		public static bool IsEnglishUpperVowel(char c) => IsEnglishUpper(c) && GetLetter(c).HasFlag(Letter.LatinVowel);
 
-		public static bool IsGermanLower(char x) => ASCII[x].HasFlag(Letter.GerLower);
+		public static bool IsGermanLower(char x) => GetLetter(x).HasFlag(Letter.GerLower);
 
-		public static bool IsGermanUpper(char x) => ASCII[x].HasFlag(Letter.GerUpper);
+		public static bool IsGermanUpper(char x) => GetLetter(x).HasFlag(Letter.GerUpper);
 
 		public static bool IsGermanAlpha(char x) => IsGermanLower(x) || IsGermanUpper(x);
 
-		public static bool IsGermanUpperVowel(char c) => IsGermanUpper(c) && ASCII[c].HasFlag(Letter.LatinVowel);
+		public static bool IsGermanUpperVowel(char c) => IsGermanUpper(c) && GetLetter(c).HasFlag(Letter.LatinVowel);
 
-		public static bool IsGenericUpper(char x) => ASCII[x].HasFlag(Letter.EngUpper);
+		public static bool IsGenericUpper(char x) => GetLetter(x).HasFlag(Letter.EngUpper);
 
 		public static bool IsGenericAlpha(char x) => IsEnglishAlpha(x) || x >= 128;
 
-		public static bool IsURLAlpha(char x) => ASCII[x].HasFlag(Letter.URL_CHAR);
+		public static bool IsURLAlpha(char x) => GetLetter(x).HasFlag(Letter.URL_CHAR);
 
 		public static bool IsAlpha(char x, MorphLanguage language) => language switch
 		{
@@ -337,8 +340,7 @@ namespace Aot.Net.MorphDict.Common
 			MorphLanguage.English => IsEnglishUpperVowel(c),
 			MorphLanguage.German => IsGermanUpperVowel(c),
 			_ => throw new ArgumentOutOfRangeException(nameof(language), language, "Unexpected language"),
-		}
-
+		};
 
 		public static bool IsUpperConsonant(char c, MorphLanguage language)
 		{

@@ -40,21 +40,21 @@ namespace Aot.Net.MorphDict.MorphWizardLib
             var wiktionaryMorphTemplate = semicolon > 0 ? s[..semicolon] : "";
             var comm = s.LastIndexOf(FlexModelCommDelim);
             var comments = comm >= 0 ? s[comm..] : "";
-            semicolon = Math.Max(semicolon, 0);
-            comm = Math.Min(comm, s.Length);
-            s = s[semicolon..comm];
+            //semicolon = Math.Max(semicolon, 0);
+            if (comm < 0)
+                comm = s.Length;
+            s = s[++semicolon..comm];
             var flexia = new List<MorphForm>();
             foreach (var oneRecord in new StringTokenizer(s, '%'))
             {
                 var ast = oneRecord.IndexOf('*');
                 if (ast < 0)
-                    throw new FormatException($"Cannot parse value: {s}");
-                var last_ast = oneRecord.LastIndexOf('*');
-                var prefix = last_ast != ast ? oneRecord.Substring(last_ast + 1) : "";
+                    throw new FormatException($"Cannot parse record {oneRecord} in value: {s}");
+                var elems = oneRecord.Split('*');
                 var g = new MorphForm(
-                    oneRecord.Substring(ast + 1, last_ast - ast - 1),
-                    oneRecord[..ast],
-                    prefix);
+                    elems[1],
+                    elems[0],
+                    elems.Length > 2 ? elems[2] : "");
                 flexia.Add(g);
             }
             return new FlexiaModel(wiktionaryMorphTemplate, comments, flexia);

@@ -6,7 +6,7 @@ namespace Aot.Net.MorphDict.Common
 
 		public StringTokenizer(string text, params char[] delims)
 		{
-			_tokens = text.Split(delims);
+			_tokens = text.TrimStart(delims).Split(delims, StringSplitOptions.RemoveEmptyEntries);
 		}
 
 		public IEnumerator<string> GetEnumerator()

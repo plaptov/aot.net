@@ -17,6 +17,19 @@ namespace Aot.Net.MorphDict.Common
 			return list;
 		}
 
+		public static T[] ReadVectorInner<T>(BinaryReader reader, int count)
+			where T : unmanaged, ISerializableStruct<T>
+		{
+			var list = new T[count];
+			Span<byte> buf = stackalloc byte[Size<T>()];
+			for (int i = 0; i < count; i++)
+			{
+				reader.Read(buf);
+				list[i] = Read<T>(buf).Value;
+			}
+			return list;
+		}
+
 		public static ReadResult<T> Read<T>(ReadOnlySpan<byte> bytes)
 			where T : unmanaged, ISerializableStruct<T>
 		{

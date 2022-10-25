@@ -46,30 +46,32 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
             Stream basesFile)
         {
             _formAutomat.Load(formsAutomFile);
-
-            using var reader = new StreamReader(annotFile, Encoding.UTF8, leaveOpen: true);
-            FlexiaModels = ReadFlexiaModels(reader);
-            AccentModels = ReadAccentModels(reader);
-            Prefixes = ReadPrefixes(reader);
-            var count = GetCount(reader);
-            _lemmaInfos = StructSerializer.ReadVectorInner<LemmaInfoAndLemma>(annotFile, count);
-            count = GetCount(reader);
-            var productiveModels = new byte[count];
-            annotFile.Read(productiveModels);
-            ProductiveModels = productiveModels;
-
+            ReadAnnotFile(annotFile);
             Bases = ShortStringHolder.ReadShortStringHolder(basesFile);
             CreateModelsIndex();
         }
 
-        private static IReadOnlyList<string> ReadPrefixes(TextReader reader)
+        protected void ReadAnnotFile(Stream annotFile)
+        {
+			using var reader = new BinaryReader(annotFile, Encoding.UTF8);
+			FlexiaModels = ReadFlexiaModels(reader);
+			AccentModels = ReadAccentModels(reader);
+			Prefixes = ReadPrefixes(reader);
+			var count = GetCount(reader);
+			_lemmaInfos = StructSerializer.ReadVectorInner<LemmaInfoAndLemma>(reader, count);
+			count = GetCount(reader);
+			var productiveModels = new byte[count];
+			reader.Read(productiveModels);
+			ProductiveModels = productiveModels;
+		}
+
+		private static IReadOnlyList<string> ReadPrefixes(BinaryReader reader)
         {
             var count = GetCount(reader);
-            var list = new List<string>(count + 1);
-            list.Add("");
+            var list = new List<string>(count + 1) { "" };
             for (int i = 0; i < count; i++)
             {
-                list.Add(reader.ReadLine()!);
+                list.Add(reader.ReadTerminatedString1251().Trim());
             }
             return list;
         }
