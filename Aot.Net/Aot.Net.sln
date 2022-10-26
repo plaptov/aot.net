@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aot.Net.MorphDict.MorphWiza
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aot.Net.MorphDict.LemmatizerBaseLib", "MorphDict\Aot.Net.MorphDict.LemmatizerBaseLib\Aot.Net.MorphDict.LemmatizerBaseLib.csproj", "{D6BB952C-6DFC-4B70-B1F0-54A763E3A3C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aot.Net.System", "Aot.Net.System\Aot.Net.System.csproj", "{18D36EF5-6DB9-46A1-8C08-6911209DB363}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aot.Net.System", "Aot.Net.System\Aot.Net.System.csproj", "{18D36EF5-6DB9-46A1-8C08-6911209DB363}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aot.Net.Tests", "Aot.Net.Tests\Aot.Net.Tests.csproj", "{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{18D36EF5-6DB9-46A1-8C08-6911209DB363}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18D36EF5-6DB9-46A1-8C08-6911209DB363}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18D36EF5-6DB9-46A1-8C08-6911209DB363}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

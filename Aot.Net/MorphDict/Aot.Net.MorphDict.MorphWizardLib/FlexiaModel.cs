@@ -40,7 +40,6 @@ namespace Aot.Net.MorphDict.MorphWizardLib
             var wiktionaryMorphTemplate = semicolon > 0 ? s[..semicolon] : "";
             var comm = s.LastIndexOf(FlexModelCommDelim);
             var comments = comm >= 0 ? s[comm..] : "";
-            //semicolon = Math.Max(semicolon, 0);
             if (comm < 0)
                 comm = s.Length;
             s = s[++semicolon..comm];
