@@ -16,13 +16,13 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 		public int AlphabetSize { get; }
 
-		public IReadOnlyList<int> Alphabet2Code { get; }
+		public IReadOnlyDictionary<char, int> Alphabet2Code { get; }
 
 		public IReadOnlyList<char> Code2Alphabet { get; }
 
 		public int AlphabetSizeWithoutAnnotator { get; }
 
-		public IReadOnlyList<int> Alphabet2CodeWithoutAnnotator { get; }
+		public IReadOnlyDictionary<char, int> Alphabet2CodeWithoutAnnotator { get; }
 
 		public IReadOnlyList<char> Code2AlphabetWithoutAnnotator { get; }
 
@@ -32,14 +32,12 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			AnnotChar = annotChar;
 
 			var code2Alphabet = new char[MaxAlphabetSize];
-			var alphabet2Code = new int[256];
-			AlphabetSize = InitAlphabet(language, code2Alphabet, alphabet2Code, annotChar);
+			AlphabetSize = InitAlphabet(language, code2Alphabet, out var alphabet2Code, annotChar);
 			Code2Alphabet = code2Alphabet;
 			Alphabet2Code = alphabet2Code;
 
 			var code2AlphabetWithoutAnnotator = new char[MaxAlphabetSize];
-			var alphabet2CodeWithoutAnnotator = new int[256];
-			AlphabetSizeWithoutAnnotator = InitAlphabet(language, code2AlphabetWithoutAnnotator, alphabet2CodeWithoutAnnotator, (char)257/* non-exeting symbol */);
+			AlphabetSizeWithoutAnnotator = InitAlphabet(language, code2AlphabetWithoutAnnotator, out var alphabet2CodeWithoutAnnotator, (char)257/* non-exeting symbol */);
 			Code2AlphabetWithoutAnnotator = code2AlphabetWithoutAnnotator;
 			Alphabet2CodeWithoutAnnotator = alphabet2CodeWithoutAnnotator;
 
@@ -90,36 +88,42 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return Result;
 		}
 
-		private static int InitAlphabet(MorphLanguage Language, char[] pCode2Alphabet, int[] pAlphabet2Code, char AnnotChar)
+		private static int InitAlphabet(
+			MorphLanguage Language,
+			char[] pCode2Alphabet,
+			out IReadOnlyDictionary<char, int> pAlphabet2Code,
+			char AnnotChar)
 		{
 			if (IsUpperAlpha(AnnotChar, Language))
 				throw new ArgumentException($"AnnotChar must not be uppercase. Value: {AnnotChar}");
 			const string additionalEnglishChars = "'1234567890";
 			const string additionalGermanChars = "";
 			const string additionalRussianChars = "&_";
+			var allChars = Encodings.GetNonUnicodeChars(Language);
 			int AlphabetSize = 0;
-			for (char i = (char)0; i < 256; i++)
+			var dict = new DefaultDictionary<char, int>(-1);
+			for (int i = 0; i < 256; i++)
 			{
-				if (IsUpperAlpha(i, Language)
-					|| (i == '-')
-					|| (i == AnnotChar)
-					|| (Language == MorphLanguage.English && additionalEnglishChars.Contains(i))
-					|| (Language == MorphLanguage.German && additionalGermanChars.Contains(i))
-					|| (Language == MorphLanguage.Russian && additionalRussianChars.Contains(i))
-					|| (Language == MorphLanguage.URL && IsAlpha(i, MorphLanguage.URL))
+				char c = allChars[i];
+				if (IsUpperAlpha(c, Language)
+					|| (c == '-')
+					|| (c == AnnotChar)
+					|| (Language == MorphLanguage.English && additionalEnglishChars.Contains(c))
+					|| (Language == MorphLanguage.German && additionalGermanChars.Contains(c))
+					|| (Language == MorphLanguage.Russian && additionalRussianChars.Contains(c))
+					|| (Language == MorphLanguage.URL && IsAlpha(c, MorphLanguage.URL))
 				)
 				{
-					pCode2Alphabet[AlphabetSize] = i;
-					pAlphabet2Code[i] = AlphabetSize;
+					pCode2Alphabet[AlphabetSize] = c;
+					dict[c] = AlphabetSize;
 					AlphabetSize++;
 				}
-				else
-					pAlphabet2Code[i] = -1;
 			}
 
 			if (AlphabetSize > MaxAlphabetSize)
 				throw new Exception("Error! The ABC is too large");
 
+			pAlphabet2Code = dict;
 			return AlphabetSize;
 		}
 	}

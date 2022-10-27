@@ -32,9 +32,10 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					relations[i] = new MorphAutomRelation(reader.ReadUInt32());
 				Relations = relations;
 
-				foreach (var item in Alphabet2Code)
+				var chars = Encodings.GetNonUnicodeChars(Language);
+				foreach (var c in chars)
 				{
-					if (reader.ReadInt32() != item)
+					if (reader.ReadInt32() != Alphabet2Code[c])
 						throw new InvalidOperationException($"{Language} alphabet has changed; cannot load morph automat");
 				}
 			}
