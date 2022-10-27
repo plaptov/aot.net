@@ -20,15 +20,25 @@ namespace Aot.Net.Tests
 		}
 
 		[Test]
-		public void LoadTest()
+		public void One_lemma()
 		{
 			const string word = "спрятавшимся";
 
 			var (found, s) = _lemmatizer.GetAllAncodesAndLemmasQuick(word, false, 1024, true);
 
-			Assert.IsTrue(found);
-
+			Assert.That(found, Is.True);
+			Assert.That(s, Is.EqualTo("спряТАТЬСЯ мдмтмч#"));
 		}
 
+		[Test]
+		public void Two_lemmas()
+		{
+			const string word = "стали";
+
+			var (found, s) = _lemmatizer.GetAllAncodesAndLemmasQuick(word, false, 1024, true);
+
+			Assert.That(found, Is.True);
+			Assert.That(s, Is.EqualTo("стаТЬ кк#сталЬ гбгвгегжгй#"));
+		}
 	}
 }

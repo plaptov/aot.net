@@ -4,10 +4,12 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 {
 	public class MorphAutomat : CABCEncoder
 	{
+		private readonly char[] _chars;
 		private int[] _childrenCache;
 
 		public MorphAutomat(MorphLanguage language, char annotChar) : base(language, annotChar)
 		{
+			_chars = Encodings.GetNonUnicodeChars(language);
 		}
 
 		public IReadOnlyList<MorphAutomNode> Nodes { get; private set; }
@@ -65,7 +67,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				for (; start != end; start++)
 				{
 					MorphAutomRelation p = Relations[start];
-					_childrenCache[NodeNo * MaxAlphabetSize + Alphabet2Code[p.GetRelationalChar()]] = p.GetChildNo();
+					_childrenCache[NodeNo * MaxAlphabetSize + Alphabet2Code[_chars[p.GetRelationalChar()]]] = p.GetChildNo();
 				};
 			};
 		}
@@ -87,7 +89,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				for (; start != end; start++)
 				{
 					MorphAutomRelation p = Relations[start];
-					if (RelationChar == p.GetRelationalChar())
+					if (RelationChar == _chars[p.GetRelationalChar()])
 						return p.GetChildNo();
 				};
 
@@ -144,10 +146,10 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			for (int i = 0; i < Count; i++)
 			{
 				MorphAutomRelation p = GetChildren(NodeNo, i);
-				curr_path[CurrPathSize] = p.GetRelationalChar();
+				curr_path[CurrPathSize] = _chars[p.GetRelationalChar()];
 				GetAllMorphInterpsRecursive(p.GetChildNo(), curr_path, Infos);
 			};
-			curr_path.RemoveRange(CurrPathSize - 1, curr_path.Count - CurrPathSize);
+			curr_path.RemoveRange(CurrPathSize, curr_path.Count - CurrPathSize);
 		}
 
 		public List<AutomAnnotationInner> GetInnerMorphInfos(string text, int textPos)

@@ -159,8 +159,8 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			List<PredictTuple> res = new(0);
 			if (CheckABC(InputWordString)) // if the ABC is wrong this prediction yuilds to many variants
 			{
-				InputWordString = new string(InputWordString.Reverse().ToArray());
-				_predict.Find(_formAutomat.GetCriticalNounLetterPack(), out res);
+				var reversedWordForm = new string(InputWordString.Reverse().ToArray());
+				_predict.Find(reversedWordForm, out res);
 			}
 
 			List<int> has_nps = new(32); // assume not more than 32 different pos

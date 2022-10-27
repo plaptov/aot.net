@@ -7,11 +7,13 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 	public class PredictBase
 	{
 		private readonly MorphAutomat _suffixAutomat;
+		private readonly char[] _chars;
 		private uint[] _modelFreq;
 
 		public PredictBase(MorphLanguage language)
 		{
 			_suffixAutomat = new MorphAutomat(language, CABCEncoder.MorphAnnotChar);
+			_chars = Encodings.GetNonUnicodeChars(language);
 		}
 
 		public IReadOnlyList<uint> ModelFreq => _modelFreq;
@@ -53,7 +55,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			if (i < CABCEncoder.MinimalPredictionSuffix)
 				return false;
 
-			if (r != -1)
+			if (r == -1)
 				throw new Exception();
 			FindRecursive(r, new List<char>(), res);
 			return true;
@@ -85,10 +87,10 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			for (int i = 0; i < count; i++)
 			{
 				var p = _suffixAutomat.GetChildren(nodeNo, i);
-				curr_path[currPathSize] = p.GetRelationalChar();
+				curr_path[currPathSize] = _chars[p.GetRelationalChar()];
 				FindRecursive(p.GetChildNo(), curr_path, infos);
 			}
-			curr_path.RemoveRange(currPathSize - 1, curr_path.Count - currPathSize);
+			curr_path.RemoveRange(currPathSize, curr_path.Count - currPathSize);
 		}
 	}
 }
