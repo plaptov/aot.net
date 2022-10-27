@@ -2,6 +2,8 @@
 
 namespace Aot.Net.MorphDict.LemmatizerBaseLib
 {
+	public record struct LemmaWithWeight(string Lemma, int Weight);
+
 	public class Lemmatizer : MorphDict
 	{
 		protected readonly PredictBase _predict;
@@ -225,6 +227,53 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				sb.Append('#');
 			}
 			return (true, sb.ToString());
+		}
+
+		protected string GetLemmaString(AutomAnnotationInner A, bool found, string InputWordString)
+		{
+			var M = FlexiaModels[A.ModelNo];
+			var F = M.Flexia[A.ItemNo];
+			var PrefixLen = F.PrefixStr.Length;
+			var BaseStart = 0;
+			if (found || InputWordString[..PrefixLen] != F.PrefixStr)
+				BaseStart = PrefixLen;
+			var BaseLen = InputWordString.Length - F.FlexiaStr.Length - BaseStart;
+			if (BaseLen < 0)
+				BaseLen = InputWordString.Length;
+
+			return string.Concat(InputWordString.AsSpan(BaseStart, BaseLen), M.Flexia[0].FlexiaStr);
+		}
+
+		public LemmaWithWeight[] GetLemmas(string word, bool usePrediction = true)
+		{
+			word = FilterSrc(word);
+
+			bool found = LemmatizeWord(word, false, usePrediction, false, out var findResults);
+			var infos = new LemmaWithWeight[findResults.Count];
+			for (int i = 0; i < findResults.Count; i++)
+			{
+				infos[i] = new LemmaWithWeight(
+					GetLemmaString(findResults[i], found, word),
+					findResults[i].Weight);
+			}
+			return infos;
+		}
+
+		public string? GetBestLemma(string word, bool usePrediction = true)
+		{
+			word = FilterSrc(word);
+
+			bool found = LemmatizeWord(word, false, usePrediction, false, out var findResults);
+			if (findResults.Count == 0)
+				return null;
+
+			var best = findResults[0];
+			for (var i = 1; i < findResults.Count; i++)
+			{
+				if (findResults[i].Weight > best.Weight)
+					best = findResults[i];
+			}
+			return GetLemmaString(best, found, word);
 		}
 	}
 }

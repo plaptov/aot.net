@@ -16,9 +16,12 @@
 			return (int)(_data & 0xffffff);
 		}
 
-		public readonly char GetRelationalChar()
+		/// <summary>
+		/// Returns char in Win1251 or Win1252 codepage
+		/// </summary>
+		public readonly byte GetRelationalChar()
 		{
-			return (char)(_data >> 24);
+			return (byte)(_data >> 24);
 		}
 
 		public void SetChildNo(uint v)
