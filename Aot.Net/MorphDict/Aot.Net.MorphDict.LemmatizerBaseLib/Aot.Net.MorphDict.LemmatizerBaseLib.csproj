@@ -1,10 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <ProductName>AOT.Net Lemmatizer</ProductName>
   </PropertyGroup>
+
+  <Import Project="..\..\CommonProperties.proj"/>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Aot.Net.System\Aot.Net.System.csproj" />

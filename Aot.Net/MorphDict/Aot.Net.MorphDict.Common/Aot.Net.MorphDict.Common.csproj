@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <Import Project="..\..\CommonProperties.proj"/>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Aot.Net.System\Aot.Net.System.csproj" />
   </ItemGroup>

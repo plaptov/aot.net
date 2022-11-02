@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Authors>Pavel Laptov</Authors>
+		<Copyright>Copyright © 2022</Copyright>
+
+		<Product>AOT.Net</Product>
+		<ProductVersion>1.0.0-alpha</ProductVersion>
+		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<PackageVersion>1.0.0-alpha</PackageVersion>
+
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/plaptov/aot.net</RepositoryUrl>
+		<PackageProjectUrl>https://github.com/plaptov/aot.net</PackageProjectUrl>
+		<PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
+		<PackageTags>text russian lemmatizer lemma lemmatization</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)..\README.md" Pack="True" PackagePath="\" />
+	</ItemGroup>
+</Project>

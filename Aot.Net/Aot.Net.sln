@@ -15,7 +15,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aot.Net.MorphDict.Lemmatize
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aot.Net.System", "Aot.Net.System\Aot.Net.System.csproj", "{18D36EF5-6DB9-46A1-8C08-6911209DB363}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aot.Net.Tests", "Aot.Net.Tests\Aot.Net.Tests.csproj", "{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aot.Net.Tests", "Aot.Net.Tests\Aot.Net.Tests.csproj", "{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{0A0222E2-70BB-421D-80CB-B991B9DE0E18}"
+	ProjectSection(SolutionItems) = preProject
+		CommonProperties.proj = CommonProperties.proj
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

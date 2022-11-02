@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <Import Project="..\..\CommonProperties.proj"/>
+
   <ItemGroup>
     <ProjectReference Include="..\Aot.Net.MorphDict.Common\Aot.Net.MorphDict.Common.csproj" />
   </ItemGroup>
