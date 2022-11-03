@@ -73,5 +73,19 @@ namespace Aot.Net.Tests
 			Assert.Throws<InvalidOperationException>(() =>
 				_lemmatizer.GetBestLemma(nonValidString.AsSpan()));
 		}
+
+
+		[Test]
+		[TestCase("123456")]
+		[TestCase("www.mos.ru")]
+		[TestCase("ВТБ")]
+		[TestCase("abc@example.com")]
+		public void Input_as_result_when_not_a_word(string word)
+		{
+			var lemmas = _lemmatizer.GetBestLemma(word);
+
+			Assert.That(lemmas, Is.EqualTo(word.ToUpperInvariant()));
+		}
+
 	}
 }

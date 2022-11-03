@@ -59,6 +59,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				Count = Nodes.Count;
 
 			_childrenCache = new int[Count * MaxAlphabetSize];
+			Array.Fill(_childrenCache, -1);
 
 			for (var NodeNo = 0; NodeNo < Count; NodeNo++)
 			{
@@ -68,8 +69,8 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				{
 					MorphAutomRelation p = Relations[start];
 					_childrenCache[NodeNo * MaxAlphabetSize + Alphabet2Code[_chars[p.GetRelationalChar()]]] = p.GetChildNo();
-				};
-			};
+				}
+			}
 		}
 
 		internal int NextNode(int NodeNo, char RelationChar)
@@ -91,10 +92,10 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					MorphAutomRelation p = Relations[start];
 					if (RelationChar == _chars[p.GetRelationalChar()])
 						return p.GetChildNo();
-				};
+				}
 
 				return -1;
-			};
+			}
 		}
 
 		public MorphAutomRelation GetChildren(int NodeNo, int childNo = 0)
@@ -115,7 +116,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					return -1;
 				}
 				r = nd;
-			};
+			}
 			//assert ( r != -1);
 			//  passing annotation char
 
@@ -138,7 +139,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				DecodeMorphAutomatInfo(i, out var ModelNo, out var ItemNo, out var PrefixNo);
 				AutomAnnotationInner A = new(ModelNo, ItemNo, PrefixNo);
 				Infos.Add(A);
-			};
+			}
 
 			int Count = GetChildrenCount(NodeNo);
 			int CurrPathSize = curr_path.Count;
@@ -148,7 +149,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				MorphAutomRelation p = GetChildren(NodeNo, i);
 				curr_path[CurrPathSize] = _chars[p.GetRelationalChar()];
 				GetAllMorphInterpsRecursive(p.GetChildNo(), curr_path, Infos);
-			};
+			}
 			curr_path.RemoveRange(CurrPathSize, curr_path.Count - CurrPathSize);
 		}
 

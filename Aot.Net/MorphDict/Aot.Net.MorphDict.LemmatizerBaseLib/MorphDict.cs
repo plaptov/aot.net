@@ -103,7 +103,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
                 for (; CurrentModel < LemmaInfos[i].LemmaInfo.FlexiaModelNo; CurrentModel++)
                 {
                     _modelsIndex[CurrentModel + 1] = i;
-                };
+                }
 
             for (; CurrentModel < FlexiaModels.Count; CurrentModel++)
                 _modelsIndex[CurrentModel + 1] = LemmaInfos.Count;

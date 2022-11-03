@@ -120,7 +120,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					{
 						if (!IsPrefix(new string(InputWordStr[..UnknownPrefixLen]))) // TODO Change to span-based method
 							results.Clear();
-					};
+					}
 				}
 
 				// отменяем предсказание по местоимениям, например _R("Семыкиным")
@@ -129,7 +129,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					{
 						results.Clear();
 						break;
-					};
+					}
 			}
 
 			if (results.Count > 0)
@@ -198,7 +198,9 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				_predict.Find(reversedWordForm, out res);
 			}
 
-			List<int> has_nps = new(32); // assume not more than 32 different pos
+			Span<int> has_nps = stackalloc int[32]; // assume not more than 32 different pos
+			for (int i = 0; i < has_nps.Length; i++)
+				has_nps[i] = -1;
 			FindResults = new();
 			foreach (var item in res)
 			{
@@ -224,7 +226,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			{
 				_predict.Find(_formAutomat.GetCriticalNounLetterPack(), out res);
 				FindResults.Add(ConvertPredictTupleToAnnot(res.Last()));
-			};
+			}
 			return FindResults;
 		}
 

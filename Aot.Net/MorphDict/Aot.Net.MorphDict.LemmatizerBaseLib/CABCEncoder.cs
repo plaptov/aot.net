@@ -87,7 +87,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			{
 				Result += Alphabet2CodeWithoutAnnotator[ch] * c;
 				c *= AlphabetSizeWithoutAnnotator;
-			};
+			}
 			return Result;
 		}
 

@@ -49,7 +49,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				if (nd == -1)
 					break;
 				r = nd;
-			};
+			}
 			res = new List<PredictTuple>();
 			// no prediction by suffix which is less than 3
 			if (i < CABCEncoder.MinimalPredictionSuffix)
@@ -75,9 +75,9 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				var k = curr_path.IndexOf(_suffixAutomat.AnnotChar, j + 1);
 				if (k < 0)
 					throw new Exception();
-				var partOfSpeechNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(i).Take(j - i - 1));
-				var lemmaInfoNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(j).Take(k - j - 1));
-				var itemNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(k));
+				var partOfSpeechNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(i + 1).Take(j - i - 1));
+				var lemmaInfoNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(j + 1).Take(k - j - 1));
+				var itemNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(k + 1));
 				infos.Add(new((ushort)itemNo, lemmaInfoNo, (byte)partOfSpeechNo));
 			}
 
