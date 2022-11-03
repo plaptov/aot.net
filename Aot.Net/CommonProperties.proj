@@ -14,6 +14,7 @@
 		<PackageLicenseExpression>LGPL-2.1-or-later</PackageLicenseExpression>
 		<PackageTags>text russian lemmatizer lemma lemmatization</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackRelease>true</PackRelease>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Include="$(SolutionDir)..\README.md" Pack="True" PackagePath="\" />
