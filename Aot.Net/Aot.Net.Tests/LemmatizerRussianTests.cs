@@ -5,7 +5,7 @@ namespace Aot.Net.Tests
 	[TestFixture]
 	public class LemmatizerRussianTests
 	{
-		protected readonly LemmatizerRussian _lemmatizer = new();
+		protected readonly LemmatizerRussian _lemmatizer = new() { TreatApostropheAsHardSign = true };
 
 		[OneTimeSetUp]
 		public void Setup()
@@ -27,7 +27,7 @@ namespace Aot.Net.Tests
 			var (found, s) = _lemmatizer.GetAllAncodesAndLemmasQuick(word, false, 1024, true);
 
 			Assert.That(found, Is.True);
-			Assert.That(s, Is.EqualTo("спряТАТЬСЯ мдмтмч#"));
+			Assert.That(s, Is.EqualTo("СПРЯТАТЬСЯ мдмтмч#"));
 		}
 
 		[Test]
@@ -38,7 +38,40 @@ namespace Aot.Net.Tests
 			var (found, s) = _lemmatizer.GetAllAncodesAndLemmasQuick(word, false, 1024, true);
 
 			Assert.That(found, Is.True);
-			Assert.That(s, Is.EqualTo("стаТЬ кк#сталЬ гбгвгегжгй#"));
+			Assert.That(s, Is.EqualTo("СТАТЬ кк#СТАЛЬ гбгвгегжгй#"));
+		}
+
+		[Test]
+		public void Should_lemmatize_span_with_modification()
+		{
+			Span<char> span = stackalloc char[] { ' ', 'п', 'о', 'д', '\'', 'е', 'з', 'д', 'о', 'в', '\t' };
+
+			var lemma = _lemmatizer.GetBestLemma(span);
+
+			Assert.That(lemma, Is.Not.Null);
+			Assert.That(lemma, Is.EqualTo("ПОДЪЕЗД"));
+			Assert.That(span.ToString(), Is.EqualTo(" ПОДЪЕЗДОВ\t"));
+		}
+
+		[Test]
+		public void Should_lemmatize_readonlyspan_when_filtered()
+		{
+			var nonValidString = " под'ездов\t";
+
+			var validString = _lemmatizer.FilterSrc(nonValidString);
+			var lemma = _lemmatizer.GetBestLemma(validString.AsSpan());
+
+			Assert.That(lemma, Is.Not.Null);
+			Assert.That(lemma, Is.EqualTo("ПОДЪЕЗД"));
+		}
+
+		[Test]
+		public void Should_not_lemmatize_readonlyspan_when_non_filtered()
+		{
+			var nonValidString = " под'ездов\t";
+
+			Assert.Throws<InvalidOperationException>(() =>
+				_lemmatizer.GetBestLemma(nonValidString.AsSpan()));
 		}
 	}
 }

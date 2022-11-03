@@ -10,6 +10,8 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 		public const char MorphAnnotChar = '+';
 		public const int MinimalPredictionSuffix = 3;
 
+		private readonly string _criticalNounLetterPack;
+
 		public MorphLanguage Language { get; }
 
 		public char AnnotChar { get; }
@@ -30,6 +32,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 		{
 			Language = language;
 			AnnotChar = annotChar;
+			_criticalNounLetterPack = new(AnnotChar, MinimalPredictionSuffix);
 
 			var code2Alphabet = new char[MaxAlphabetSize];
 			AlphabetSize = InitAlphabet(language, code2Alphabet, out var alphabet2Code, annotChar);
@@ -45,7 +48,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				throw new Exception("Invalid alphabets sizes");
 		}
 
-		public string GetCriticalNounLetterPack() => new(AnnotChar, MinimalPredictionSuffix);
+		public string GetCriticalNounLetterPack() => _criticalNounLetterPack;
 
 		public void CheckABCWithAnnotator(string WordForm)
 		{
@@ -54,7 +57,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					throw new Exception($"Bad ABC Word=\"{WordForm}\", char='{WordForm[i]}', index={i}");
 		}
 
-		public bool CheckABCWithoutAnnotator(string WordForm)
+		public bool CheckABCWithoutAnnotator(ReadOnlySpan<char> WordForm)
 		{
 			for (var i = 0; i < WordForm.Length; i++)
 				if (Alphabet2CodeWithoutAnnotator[WordForm[i]] == -1)

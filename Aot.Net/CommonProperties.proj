@@ -4,9 +4,9 @@
 		<Copyright>Copyright © 2022</Copyright>
 
 		<Product>AOT.Net</Product>
-		<ProductVersion>1.0.0-alpha</ProductVersion>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
-		<PackageVersion>1.0.0-alpha</PackageVersion>
+		<ProductVersion>1.0.1-alpha</ProductVersion>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
+		<PackageVersion>1.0.1-alpha</PackageVersion>
 
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://github.com/plaptov/aot.net</RepositoryUrl>

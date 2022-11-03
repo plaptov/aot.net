@@ -33,7 +33,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				_modelFreq[item.LemmaInfo.FlexiaModelNo]++;
 		}
 
-		public bool Find(string reversedWordForm, out List<PredictTuple> res)
+		public bool Find(ReadOnlySpan<char> reversedWordForm, out List<PredictTuple> res)
 		{
 			//  we don't want to predict words which contains "AnnotChar" 
 			//if (ReversedWordForm.find(AnnotChar) != std::string::npos)

@@ -21,6 +21,9 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 		public bool UseStatistic { get; private set; }
 
+		/// <summary>
+		/// Учитывать букву Ё (иначе будет приведено к Е)
+		/// </summary>
 		public bool AllowRussianJo { get; private set; }
 
 		/// <summary>
@@ -67,13 +70,38 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				}
 		}
 
+		// TODO Make span-based method
 		protected bool IsPrefix(string prefix) => _prefixesSet.Contains(prefix);
 
-		protected virtual string FilterSrc(string src) => src;
+		protected virtual bool NeedFilter(char c) =>
+			char.IsWhiteSpace(c) || char.IsLower(c);
 
-		protected bool LemmatizeWord(string InputWordStr, bool cap, bool predict, bool getLemmaInfos, out List<AutomAnnotationInner> results)
+		public bool NeedFilter(ReadOnlySpan<char> s)
 		{
-			InputWordStr = InputWordStr.Trim().ToUpper();
+			for (int i = 0; i < s.Length; i++)
+			{
+				if (NeedFilter(s[i]))
+					return true;
+			}
+			return false;
+		}
+
+		public virtual string FilterSrc(string src) => src.Trim().ToUpper();
+
+		public virtual Span<char> FilterSrc(Span<char> src)
+		{
+			src = src.Trim();
+			for (int i = 0; i < src.Length; i++)
+			{
+				char c = src[i];
+				if (char.IsLower(c))
+					src[i] = char.ToUpperInvariant(c);
+			}
+			return src;
+		}
+
+		protected bool LemmatizeWord(ReadOnlySpan<char> InputWordStr, bool cap, bool predict, bool getLemmaInfos, out List<AutomAnnotationInner> results)
+		{
 			int WordOffset = 0;
 
 			results = _formAutomat.GetInnerMorphInfos(InputWordStr, 0);
@@ -90,7 +118,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					if (KnownPostfixLen < 6)// if  the known part is too short
 						//if	(UnknownPrefixLen > 5)// no prediction if unknown prefix is more than 5
 					{
-						if (!IsPrefix(InputWordStr[..UnknownPrefixLen]))
+						if (!IsPrefix(new string(InputWordStr[..UnknownPrefixLen]))) // TODO Change to span-based method
 							results.Clear();
 					};
 				}
@@ -139,11 +167,14 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			};
 		}
 
-		protected bool CheckAbbreviation(string InputWordStr, out List<AutomAnnotationInner>? FindResults, bool is_cap)
+		protected bool CheckAbbreviation(ReadOnlySpan<char> InputWordStr, out List<AutomAnnotationInner>? FindResults, bool is_cap)
 		{
 			FindResults = null;
-			if (InputWordStr.Any(c => Utils.IsUpperConsonant(c, Language)))
-				return false;
+			foreach (var c in InputWordStr)
+			{
+				if (Utils.IsUpperConsonant(c, Language))
+					return false;
+			}
 
 			_predict.Find(_formAutomat.GetCriticalNounLetterPack(), out var res);
 			FindResults = new(1)
@@ -153,7 +184,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return true;
 		}
 
-		public List<AutomAnnotationInner> PredictByDataBase(string InputWordString, bool is_cap)
+		public List<AutomAnnotationInner> PredictByDataBase(ReadOnlySpan<char> InputWordString, bool is_cap)
 		{
 			if (CheckAbbreviation(InputWordString, out var FindResults, is_cap))
 				return FindResults!;
@@ -161,7 +192,9 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			List<PredictTuple> res = new(0);
 			if (CheckABC(InputWordString)) // if the ABC is wrong this prediction yuilds to many variants
 			{
-				var reversedWordForm = new string(InputWordString.Reverse().ToArray());
+				Span<char> reversedWordForm = stackalloc char[InputWordString.Length];
+				for (int i = 0; i < InputWordString.Length; i++)
+					reversedWordForm[InputWordString.Length - i - 1] = InputWordString[i];
 				_predict.Find(reversedWordForm, out res);
 			}
 
@@ -195,7 +228,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return FindResults;
 		}
 
-		public bool CheckABC(string wordForm) => _formAutomat.CheckABCWithoutAnnotator(wordForm);
+		public bool CheckABC(ReadOnlySpan<char> wordForm) => _formAutomat.CheckABCWithoutAnnotator(wordForm);
 
 		public (bool, string) GetAllAncodesAndLemmasQuick(string InputWordString, bool capital, int MaxBufferSize, bool usePrediction)
 		{
@@ -229,7 +262,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return (true, sb.ToString());
 		}
 
-		protected string GetLemmaString(AutomAnnotationInner A, bool found, string InputWordString)
+		protected string GetLemmaString(AutomAnnotationInner A, bool found, ReadOnlySpan<char> InputWordString)
 		{
 			var M = FlexiaModels[A.ModelNo];
 			var F = M.Flexia[A.ItemNo];
@@ -241,13 +274,36 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			if (BaseLen < 0)
 				BaseLen = InputWordString.Length;
 
-			return string.Concat(InputWordString.AsSpan(BaseStart, BaseLen), M.Flexia[0].FlexiaStr);
+			return string.Concat(InputWordString.Slice(BaseStart, BaseLen), M.Flexia[0].FlexiaStr);
 		}
 
 		public LemmaWithWeight[] GetLemmas(string word, bool usePrediction = true)
 		{
-			word = FilterSrc(word);
+			return GetLemmasPure(FilterSrc(word), usePrediction);
+		}
 
+		/// <summary>
+		/// Warning! Could modify input span
+		/// </summary>
+		public LemmaWithWeight[] GetLemmas(Span<char> word, bool usePrediction = true)
+		{
+			return GetLemmasPure(FilterSrc(word), usePrediction);
+		}
+
+		/// <summary>
+		/// Input span need to be filtered before call. 
+		/// Use <see cref="FilterSrc(string)"/> or <see cref="FilterSrc(Span{char})"/> on input data.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Throws when input span not filtered</exception>
+		public LemmaWithWeight[] GetLemmas(ReadOnlySpan<char> word, bool usePrediction = true)
+		{
+			if (NeedFilter(word))
+				throw new InvalidOperationException("Input chars need to be filtered. Use FilterSrc() before lemmatization.");
+			return GetLemmasPure(word, usePrediction);
+		}
+
+		protected LemmaWithWeight[] GetLemmasPure(ReadOnlySpan<char> word, bool usePrediction = true)
+		{
 			bool found = LemmatizeWord(word, false, usePrediction, false, out var findResults);
 			var infos = new LemmaWithWeight[findResults.Count];
 			for (int i = 0; i < findResults.Count; i++)
@@ -261,8 +317,31 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 		public string? GetBestLemma(string word, bool usePrediction = true)
 		{
-			word = FilterSrc(word);
+			return GetBestLemmaPure(FilterSrc(word), usePrediction);
+		}
 
+		/// <summary>
+		/// Warning! Could modify input span
+		/// </summary>
+		public string? GetBestLemma(Span<char> word, bool usePrediction = true)
+		{
+			return GetBestLemmaPure(FilterSrc(word), usePrediction);
+		}
+
+		/// <summary>
+		/// Input span need to be filtered before call. 
+		/// Use <see cref="FilterSrc(string)"/> or <see cref="FilterSrc(Span{char})"/> on input data.
+		/// </summary>
+		/// <exception cref="InvalidOperationException">Throws when input span not filtered</exception>
+		public string? GetBestLemma(ReadOnlySpan<char> word, bool usePrediction = true)
+		{
+			if (NeedFilter(word))
+				throw new InvalidOperationException("Input chars need to be filtered. Use FilterSrc() before lemmatization.");
+			return GetBestLemmaPure(word, usePrediction);
+		}
+
+		protected string? GetBestLemmaPure(ReadOnlySpan<char> word, bool usePrediction)
+		{
 			bool found = LemmatizeWord(word, false, usePrediction, false, out var findResults);
 			if (findResults.Count == 0)
 				return null;

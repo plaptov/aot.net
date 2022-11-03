@@ -102,7 +102,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return Relations[Nodes[NodeNo].GetChildrenStart() + childNo];
 		}
 
-		private int FindStringAndPassAnnotChar(string Text, int TextPos)
+		private int FindStringAndPassAnnotChar(ReadOnlySpan<char> Text, int TextPos)
 		{
 			var TextLength = Text.Length;
 			int r = 0;
@@ -152,7 +152,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			curr_path.RemoveRange(CurrPathSize, curr_path.Count - CurrPathSize);
 		}
 
-		public List<AutomAnnotationInner> GetInnerMorphInfos(string text, int textPos)
+		public List<AutomAnnotationInner> GetInnerMorphInfos(ReadOnlySpan<char> text, int textPos)
 		{
 			var Infos = new List<AutomAnnotationInner>();
 			int r = FindStringAndPassAnnotChar(text, textPos);

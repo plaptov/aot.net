@@ -23,7 +23,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
         public IReadOnlyList<byte> ProductiveModels { get; protected set; }
 
-        public List<AutomAnnotationInner> PredictBySuffix(string text, out int textPos, int minimalPredictSuffixlen)
+        public List<AutomAnnotationInner> PredictBySuffix(ReadOnlySpan<char> text, out int textPos, int minimalPredictSuffixlen)
         {
             for (textPos = 1; textPos + minimalPredictSuffixlen < text.Length; textPos++)
             {
@@ -109,7 +109,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
                 _modelsIndex[CurrentModel + 1] = LemmaInfos.Count;
         }
 
-        public List<AutomAnnotationInner> GetLemmaInfos(string text, int textPos, AutomAnnotationInner[] infos)
+        public List<AutomAnnotationInner> GetLemmaInfos(ReadOnlySpan<char> text, int textPos, AutomAnnotationInner[] infos)
         {
             var textLength = text.Length;
             var additInfos = new List<AutomAnnotationInner>();
@@ -119,7 +119,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
                 var F = FlexiaModels[annot.ModelNo];
                 var M = F.Flexia[annot.ItemNo];
                 int textStartPos = textPos + Prefixes[annot.PrefixNo].Length + M.PrefixStr.Length;
-                var Base = string.Concat(Prefixes[annot.PrefixNo], text.AsSpan(textStartPos, textLength - textStartPos - M.FlexiaStr.Length));
+                var Base = string.Concat(Prefixes[annot.PrefixNo], text.Slice(textStartPos, textLength - textStartPos - M.FlexiaStr.Length));
 
                 var start = _modelsIndex[annot.ModelNo];
                 var end = _modelsIndex[annot.ModelNo + 1];
