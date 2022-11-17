@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		CommonProperties.proj = CommonProperties.proj
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LemmatizerBenchmark", "LemmatizerBenchmark\LemmatizerBenchmark.csproj", "{F7FB4C61-C4F0-44FA-941D-A179FC4E8384}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78C38CA6-75BB-49BB-A201-CF0E746E0B7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7FB4C61-C4F0-44FA-941D-A179FC4E8384}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7FB4C61-C4F0-44FA-941D-A179FC4E8384}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7FB4C61-C4F0-44FA-941D-A179FC4E8384}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7FB4C61-C4F0-44FA-941D-A179FC4E8384}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

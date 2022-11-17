@@ -134,7 +134,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			int NodeNo,
 			Span<char> curr_path,
 			int curr_len,
-			List<AutomAnnotationInner> Infos)
+			SmallList<AutomAnnotationInner> Infos)
 		{
 			MorphAutomNode N = Nodes[NodeNo];
 			if (N.IsFinal())
@@ -159,7 +159,8 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			int r = FindStringAndPassAnnotChar(text, textPos);
 			if (r == -1)
 				return Array.Empty<AutomAnnotationInner>();
-			var Infos = new List<AutomAnnotationInner>();
+			Span<AutomAnnotationInner> span = stackalloc AutomAnnotationInner[4];
+			var Infos = new SmallList<AutomAnnotationInner>(span);
 			Span<char> path = stackalloc char[32];
 			GetAllMorphInterpsRecursive(r, path, 0, Infos);
 			return Infos.ToArray();

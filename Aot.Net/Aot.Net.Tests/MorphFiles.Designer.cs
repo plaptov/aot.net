@@ -22,7 +22,7 @@ namespace Aot.Net.Tests {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class MorphFiles {
+    public class MorphFiles {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace Aot.Net.Tests {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Aot.Net.Tests.MorphFiles", typeof(MorphFiles).Assembly);
@@ -51,7 +51,7 @@ namespace Aot.Net.Tests {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace Aot.Net.Tests {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] morph_annot {
+        public static byte[] morph_annot {
             get {
                 object obj = ResourceManager.GetObject("morph_annot", resourceCulture);
                 return ((byte[])(obj));
@@ -73,7 +73,7 @@ namespace Aot.Net.Tests {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] morph_bases {
+        public static byte[] morph_bases {
             get {
                 object obj = ResourceManager.GetObject("morph_bases", resourceCulture);
                 return ((byte[])(obj));
@@ -83,7 +83,7 @@ namespace Aot.Net.Tests {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] morph_forms_autom {
+        public static byte[] morph_forms_autom {
             get {
                 object obj = ResourceManager.GetObject("morph_forms_autom", resourceCulture);
                 return ((byte[])(obj));
@@ -93,7 +93,7 @@ namespace Aot.Net.Tests {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] morph_options {
+        public static byte[] morph_options {
             get {
                 object obj = ResourceManager.GetObject("morph_options", resourceCulture);
                 return ((byte[])(obj));
@@ -103,7 +103,7 @@ namespace Aot.Net.Tests {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] npredict_bin {
+        public static byte[] npredict_bin {
             get {
                 object obj = ResourceManager.GetObject("npredict_bin", resourceCulture);
                 return ((byte[])(obj));
