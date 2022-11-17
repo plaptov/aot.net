@@ -99,14 +99,14 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return src;
 		}
 
-		protected bool LemmatizeWord(ReadOnlySpan<char> InputWordStr, bool cap, bool predict, bool getLemmaInfos, out List<AutomAnnotationInner> results)
+		protected bool LemmatizeWord(ReadOnlySpan<char> InputWordStr, bool cap, bool predict, bool getLemmaInfos, out AutomAnnotationInner[] results)
 		{
 			int WordOffset = 0;
 
 			results = _formAutomat.GetInnerMorphInfos(InputWordStr, 0);
-			var bResult = results.Count > 0;
+			var bResult = results.Length > 0;
 
-			if (results.Count == 0 && predict)
+			if (results.Length == 0 && predict)
 			{
 				results = PredictBySuffix(InputWordStr, out WordOffset, 4); // the length of the minal suffix is 4 
 
@@ -118,7 +118,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 						//if	(UnknownPrefixLen > 5)// no prediction if unknown prefix is more than 5
 					{
 						if (!IsPrefix(InputWordStr[..UnknownPrefixLen]))
-							results.Clear();
+							results = Array.Empty<AutomAnnotationInner>();
 					}
 				}
 
@@ -126,29 +126,30 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				foreach (var item in results)
 					if (ProductiveModels[item.ModelNo] == 0)
 					{
-						results.Clear();
+						results = Array.Empty<AutomAnnotationInner>();
 						break;
 					}
 			}
 
-			if (results.Count > 0)
+			if (results.Length > 0)
 			{
 				if (getLemmaInfos)
-					results = GetLemmaInfos(InputWordStr, WordOffset, results.ToArray());
+					results = GetLemmaInfos(InputWordStr, WordOffset, results).ToArray();
 			}
 			else if (predict)
 			{
-				results = PredictByDataBase(InputWordStr, cap);
-				for (int i = results.Count - 1; i >= 0; i--)
+				var res = PredictByDataBase(InputWordStr, cap);
+				for (int i = res.Count - 1; i >= 0; i--)
 				{
-					var A = results[i];
+					var A = res[i];
 					var M = FlexiaModels[A.ModelNo];
 					var F = M.Flexia[A.ItemNo];
 					if (F.FlexiaStr.Length >= InputWordStr.Length)
 					{
-						results.RemoveAt(i);
+						res.RemoveAt(i);
 					}
 				}
+				results = res.ToArray();
 			}
 
 			return bResult;
@@ -306,8 +307,8 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 		protected LemmaWithWeight[] GetLemmasPure(ReadOnlySpan<char> word, bool usePrediction = true)
 		{
 			bool found = LemmatizeWord(word, false, usePrediction, false, out var findResults);
-			var infos = new LemmaWithWeight[findResults.Count];
-			for (int i = 0; i < findResults.Count; i++)
+			var infos = new LemmaWithWeight[findResults.Length];
+			for (int i = 0; i < findResults.Length; i++)
 			{
 				infos[i] = new LemmaWithWeight(
 					GetLemmaString(findResults[i], found, word),
@@ -344,11 +345,11 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 		protected string? GetBestLemmaPure(ReadOnlySpan<char> word, bool usePrediction)
 		{
 			bool found = LemmatizeWord(word, false, usePrediction, false, out var findResults);
-			if (findResults.Count == 0)
+			if (findResults.Length == 0)
 				return null;
 
 			var best = findResults[0];
-			for (var i = 1; i < findResults.Count; i++)
+			for (var i = 1; i < findResults.Length; i++)
 			{
 				if (findResults[i].Weight > best.Weight)
 					best = findResults[i];

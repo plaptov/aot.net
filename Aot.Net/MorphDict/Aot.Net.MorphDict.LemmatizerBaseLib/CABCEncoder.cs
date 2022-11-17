@@ -79,7 +79,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			return Result.ToString();
 		}
 
-		public int DecodeFromAlphabet(IEnumerable<char> v)
+		public int DecodeFromAlphabet(ReadOnlySpan<char> v)
 		{
 			int c = 1;
 			int Result = 0;

@@ -57,11 +57,16 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
 			if (r == -1)
 				throw new Exception();
-			FindRecursive(r, new List<char>(), res);
+			Span<char> path = stackalloc char[32];
+			FindRecursive(r, path, 0, res);
 			return true;
 		}
 
-		private void FindRecursive(int nodeNo, List<char> curr_path, List<PredictTuple> infos)
+		private void FindRecursive(
+			int nodeNo,
+			Span<char> curr_path,
+			int curr_len,
+			List<PredictTuple> infos)
 		{
 			var N = _suffixAutomat.Nodes[nodeNo];
 			if (N.IsFinal())
@@ -69,28 +74,25 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				var i = curr_path.IndexOf(_suffixAutomat.AnnotChar);
 				if (i < 0)
 					throw new Exception();
-				var j = curr_path.IndexOf(_suffixAutomat.AnnotChar, i + 1);
+				var j = curr_path[(i+1)..].IndexOf(_suffixAutomat.AnnotChar) + i + 1;
 				if (j < 0)
 					throw new Exception();
-				var k = curr_path.IndexOf(_suffixAutomat.AnnotChar, j + 1);
+				var k = curr_path[(j+1)..].IndexOf(_suffixAutomat.AnnotChar) + j + 1;
 				if (k < 0)
 					throw new Exception();
-				var partOfSpeechNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(i + 1).Take(j - i - 1));
-				var lemmaInfoNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(j + 1).Take(k - j - 1));
-				var itemNo = _suffixAutomat.DecodeFromAlphabet(curr_path.Skip(k + 1));
+				var partOfSpeechNo = _suffixAutomat.DecodeFromAlphabet(curr_path[(i + 1)..j]);
+				var lemmaInfoNo = _suffixAutomat.DecodeFromAlphabet(curr_path[(j + 1)..k]);
+				var itemNo = _suffixAutomat.DecodeFromAlphabet(curr_path[(k + 1)..curr_len]);
 				infos.Add(new((ushort)itemNo, lemmaInfoNo, (byte)partOfSpeechNo));
 			}
 
 			var count = _suffixAutomat.GetChildrenCount(nodeNo);
-			int currPathSize = curr_path.Count;
-			curr_path.Add(default);
 			for (int i = 0; i < count; i++)
 			{
 				var p = _suffixAutomat.GetChildren(nodeNo, i);
-				curr_path[currPathSize] = _chars[p.GetRelationalChar()];
-				FindRecursive(p.GetChildNo(), curr_path, infos);
+				curr_path[curr_len] = _chars[p.GetRelationalChar()];
+				FindRecursive(p.GetChildNo(), curr_path, curr_len + 1, infos);
 			}
-			curr_path.RemoveRange(currPathSize, curr_path.Count - currPathSize);
 		}
 	}
 }
