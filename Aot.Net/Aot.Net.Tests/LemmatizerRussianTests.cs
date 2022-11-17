@@ -87,5 +87,14 @@ namespace Aot.Net.Tests
 			Assert.That(lemmas, Is.EqualTo(word.ToUpperInvariant()));
 		}
 
+		[Test]
+		public void Prefixed()
+		{
+			var word = "АНТИЛЕВАЯ";
+
+			var lemma = _lemmatizer.GetBestLemma(word.AsSpan());
+
+			Assert.That(lemma, Is.EqualTo("АНТИЛЕВЫЙ"));
+		}
 	}
 }

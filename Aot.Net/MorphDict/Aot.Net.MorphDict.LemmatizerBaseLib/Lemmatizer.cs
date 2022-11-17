@@ -8,7 +8,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 	{
 		protected readonly PredictBase _predict;
 		private bool _enablePrediction = true;
-		private HashSet<string> _prefixesSet = new(0);
+		private ImmutablePrefixTree _prefixesSet = new();
 
 		public Lemmatizer(MorphLanguage language, MorphAutomat formAutomat) : base(language, formAutomat)
 		{
@@ -51,7 +51,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				_predict.Load(predictFile);
 				_predict.FillModelFreq(FlexiaModels.Count, LemmaInfos);
 			}
-			_prefixesSet = new HashSet<string>(Prefixes);
+			_prefixesSet = new(Prefixes);
 		}
 
 		private void ReadOptions(Stream optionsFile)
@@ -70,8 +70,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 				}
 		}
 
-		// TODO Make span-based method
-		protected bool IsPrefix(string prefix) => _prefixesSet.Contains(prefix);
+		protected bool IsPrefix(ReadOnlySpan<char> prefix) => _prefixesSet.ContainsString(prefix);
 
 		protected virtual bool NeedFilter(char c) =>
 			char.IsWhiteSpace(c) || char.IsLower(c);
@@ -118,7 +117,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 					if (KnownPostfixLen < 6)// if  the known part is too short
 						//if	(UnknownPrefixLen > 5)// no prediction if unknown prefix is more than 5
 					{
-						if (!IsPrefix(new string(InputWordStr[..UnknownPrefixLen]))) // TODO Change to span-based method
+						if (!IsPrefix(InputWordStr[..UnknownPrefixLen]))
 							results.Clear();
 					}
 				}
