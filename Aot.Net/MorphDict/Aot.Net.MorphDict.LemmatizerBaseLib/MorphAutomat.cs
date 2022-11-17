@@ -130,37 +130,39 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			PrefixNo = (ushort)(0x1FF & Info);
 		}
 
-		private void GetAllMorphInterpsRecursive(int NodeNo, List<char> curr_path, List<AutomAnnotationInner> Infos)
+		private void GetAllMorphInterpsRecursive(
+			int NodeNo,
+			Span<char> curr_path,
+			int curr_len,
+			List<AutomAnnotationInner> Infos)
 		{
 			MorphAutomNode N = Nodes[NodeNo];
 			if (N.IsFinal())
 			{
-				int i = DecodeFromAlphabet(curr_path);
+				int i = DecodeFromAlphabet(curr_path[..curr_len]);
 				DecodeMorphAutomatInfo(i, out var ModelNo, out var ItemNo, out var PrefixNo);
 				AutomAnnotationInner A = new(ModelNo, ItemNo, PrefixNo);
 				Infos.Add(A);
 			}
 
 			int Count = GetChildrenCount(NodeNo);
-			int CurrPathSize = curr_path.Count;
-			curr_path.Add(default);
 			for (int i = 0; i < Count; i++)
 			{
 				MorphAutomRelation p = GetChildren(NodeNo, i);
-				curr_path[CurrPathSize] = _chars[p.GetRelationalChar()];
-				GetAllMorphInterpsRecursive(p.GetChildNo(), curr_path, Infos);
+				curr_path[curr_len] = _chars[p.GetRelationalChar()];
+				GetAllMorphInterpsRecursive(p.GetChildNo(), curr_path, curr_len + 1, Infos);
 			}
-			curr_path.RemoveRange(CurrPathSize, curr_path.Count - CurrPathSize);
 		}
 
-		public List<AutomAnnotationInner> GetInnerMorphInfos(ReadOnlySpan<char> text, int textPos)
+		public AutomAnnotationInner[] GetInnerMorphInfos(ReadOnlySpan<char> text, int textPos)
 		{
-			var Infos = new List<AutomAnnotationInner>();
 			int r = FindStringAndPassAnnotChar(text, textPos);
 			if (r == -1)
-				return Infos;
-			GetAllMorphInterpsRecursive(r, new List<char>(), Infos);
-			return Infos;
+				return Array.Empty<AutomAnnotationInner>();
+			var Infos = new List<AutomAnnotationInner>();
+			Span<char> path = stackalloc char[32];
+			GetAllMorphInterpsRecursive(r, path, 0, Infos);
+			return Infos.ToArray();
 		}
 	}
 }

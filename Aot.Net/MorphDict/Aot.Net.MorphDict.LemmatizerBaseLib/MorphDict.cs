@@ -23,15 +23,15 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 
         public IReadOnlyList<byte> ProductiveModels { get; protected set; }
 
-        public List<AutomAnnotationInner> PredictBySuffix(ReadOnlySpan<char> text, out int textPos, int minimalPredictSuffixlen)
+        public AutomAnnotationInner[] PredictBySuffix(ReadOnlySpan<char> text, out int textPos, int minimalPredictSuffixlen)
         {
             for (textPos = 1; textPos + minimalPredictSuffixlen < text.Length; textPos++)
             {
                 var result = _formAutomat.GetInnerMorphInfos(text, textPos);
-                if (result.Count > 0)
+                if (result.Length > 0)
                     return result;
             }
-            return new List<AutomAnnotationInner>(0);
+            return Array.Empty<AutomAnnotationInner>();
         }
 
         /// <summary>
