@@ -18,21 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MorphDict\Aot.Net.MorphDict.LemmatizerBaseLib\Aot.Net.MorphDict.LemmatizerBaseLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="MorphFiles.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>MorphFiles.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="MorphFiles.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MorphFiles.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <ProjectReference Include="..\MorphDict\Aot.Net.MorphDict.LemmatizerPackage.Russian.Default\Aot.Net.MorphDict.LemmatizerPackage.Russian.Default.csproj" />
   </ItemGroup>
 
 </Project>

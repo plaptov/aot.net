@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Aot.Net.Tests {
+namespace Aot.Net.MorphDict.LemmatizerPackage.Russian.Default {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Aot.Net.Tests {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Aot.Net.Tests.MorphFiles", typeof(MorphFiles).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Aot.Net.MorphDict.LemmatizerPackage.Russian.Default.MorphFiles", typeof(MorphFiles).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

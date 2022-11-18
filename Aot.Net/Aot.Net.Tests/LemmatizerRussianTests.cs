@@ -10,13 +10,7 @@ namespace Aot.Net.Tests
 		[OneTimeSetUp]
 		public void Setup()
 		{
-			_lemmatizer.LoadDictionaries(
-				new MemoryStream(MorphFiles.morph_forms_autom),
-				new MemoryStream(MorphFiles.morph_annot),
-				new MemoryStream(MorphFiles.morph_bases),
-				new MemoryStream(MorphFiles.morph_options),
-				new MemoryStream(MorphFiles.npredict_bin)
-			);
+			_lemmatizer.LoadDefaultPackage();
 		}
 
 		[Test]
