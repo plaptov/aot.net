@@ -1,9 +1,14 @@
 ﻿namespace Aot.Net
 {
-	public ref struct SmallList<T> where T : unmanaged
+	/// <summary>
+	/// List-like structure which uses <see cref="Span{T}"/> as storage
+	/// while possible and allocates <see cref="List{T}"/> when needed
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public ref struct SmallList<T>
 	{
 		private int _count;
-		private Span<T> _span;
+		private readonly Span<T> _span;
 		private List<T>? _list;
 
 		public SmallList(Span<T> span)
