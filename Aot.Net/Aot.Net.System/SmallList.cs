@@ -38,10 +38,20 @@
 			if (_count == 0)
 				return Array.Empty<T>();
 			var array = new T[_count];
-			_span.CopyTo(array);
+			_span[.._count].CopyTo(array);
 			if (_count >= _span.Length)
 				_list!.CopyTo(array, _span.Length);
 			return array;
+		}
+
+		public List<T> ToList()
+		{
+			var list = new List<T>(_count);
+			foreach (var item in _span[.._count])
+				list.Add(item);
+			if (_count >= _span.Length)
+				list.AddRange(_list!);
+			return list;
 		}
 	}
 }

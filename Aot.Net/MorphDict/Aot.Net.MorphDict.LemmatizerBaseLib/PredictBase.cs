@@ -58,7 +58,10 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			if (r == -1)
 				throw new Exception();
 			Span<char> path = stackalloc char[32];
-			FindRecursive(r, path, 0, res);
+			Span<PredictTuple> buf = stackalloc PredictTuple[4];
+			var smallList = new SmallList<PredictTuple>(buf);
+			FindRecursive(r, path, 0, ref smallList);
+			res = smallList.ToList();
 			return true;
 		}
 
@@ -66,7 +69,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			int nodeNo,
 			Span<char> curr_path,
 			int curr_len,
-			List<PredictTuple> infos)
+			ref SmallList<PredictTuple> infos)
 		{
 			var N = _suffixAutomat.Nodes[nodeNo];
 			if (N.IsFinal())
@@ -91,7 +94,7 @@ namespace Aot.Net.MorphDict.LemmatizerBaseLib
 			{
 				var p = _suffixAutomat.GetChildren(nodeNo, i);
 				curr_path[curr_len] = _chars[p.GetRelationalChar()];
-				FindRecursive(p.GetChildNo(), curr_path, curr_len + 1, infos);
+				FindRecursive(p.GetChildNo(), curr_path, curr_len + 1, ref infos);
 			}
 		}
 	}
